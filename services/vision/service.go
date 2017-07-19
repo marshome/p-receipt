@@ -18,12 +18,12 @@ func NewVisionService() *VisionService {
 }
 
 func (v *VisionService)Annotate(imageFile string) (err error) {
-	proxyUrl,err:=url.Parse("https://127.0.0.1:49916")
+	proxyUrl, err := url.Parse("https://127.0.0.1:49916")
 	if err != nil {
 		return err
 	}
 
-	client:=&http.Client{
+	client := &http.Client{
 		Transport:&http.Transport{
 			Proxy:http.ProxyURL(proxyUrl),
 		},
@@ -41,25 +41,25 @@ func (v *VisionService)Annotate(imageFile string) (err error) {
 
 	request := &vision.BatchAnnotateImagesRequest{
 		Requests:[]*vision.AnnotateImageRequest{
-			&vision.AnnotateImageRequest{
+			{
 				Image:&vision.Image{
 					Content:base64.StdEncoding.EncodeToString(imageData),
 				},
-				Features:[]*vision.Feature{&vision.Feature{
+				Features:[]*vision.Feature{{
 					Type:"TEXT_DETECTION",
 					MaxResults:20,
 				}},
 			},
 		},
 	}
-	call:=service.Images.Annotate(request)
-	response,err:=call.Do()
+	call := service.Images.Annotate(request)
+	response, err := call.Do()
 	if err != nil {
 		return err
 	}
 
-	if response.Responses!=nil{
-		for _,v:=range response.Responses{
+	if response.Responses != nil {
+		for _, v := range response.Responses {
 			fmt.Println(v)
 		}
 	}
