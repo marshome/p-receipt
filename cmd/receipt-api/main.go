@@ -14,6 +14,10 @@ import (
 )
 
 func main() {
+	var options = &handler.Options{
+		CacheDir: "./google_vision_cache",
+	}
+
 	cmd := cobra.Command{
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			middleware.Debug = true
@@ -23,13 +27,13 @@ func main() {
 				return errors.WithStack(err)
 			}
 
+			api := operations.NewMarsReceiptAPI(swaggerSpec)
+
 			h := handler.NewReceiptExtractHandler()
-			err = h.Init(&handler.Options{ProxyUrl: "https://127.0.0.1:49916", CacheDir: "./google_vision_cache"})
+			err = h.Init(options)
 			if err != nil {
 				return errors.WithStack(err)
 			}
-
-			api := operations.NewMarsReceiptAPI(swaggerSpec)
 
 			api.ReceiptsReportHandler = operations.ReceiptsReportHandlerFunc(
 				func(params operations.ReceiptsReportParams) middleware.Responder {
@@ -63,6 +67,10 @@ func main() {
 			return nil
 		},
 	}
+
+	cmd.PersistentFlags().StringVar(&options.GoogleApiKey, "google-api-key", "", "googleApiKey")
+	cmd.PersistentFlags().StringVar(&options.ProxyUrl, "proxy-url", "", "proxy")
+
 	err := cmd.Execute()
 	if err != nil {
 		logrus.Fatalln(err)

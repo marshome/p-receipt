@@ -17,13 +17,15 @@ type Options struct {
 	ProxyUrl            string
 	MaxTextDetectResult int64
 	CacheDir            string
+	ApiKey              string
 }
 
 type CallOptionKey struct {
+	ApiKey string
 }
 
 func (op *CallOptionKey) Get() (k, v string) {
-	return "key", "AIzaSyCSAjDqrNp9RdNECDM2LIszWwphKHGEsog"
+	return "key", op.ApiKey
 }
 
 type Client struct {
@@ -44,6 +46,10 @@ func (c *Client) Init(options *Options) (err error) {
 	}
 
 	c.options = options
+
+	if c.options.ApiKey == "" {
+		return errors.WithStack(errors.New("need google ApiKey"))
+	}
 
 	if c.options.MaxTextDetectResult == 0 {
 		c.options.MaxTextDetectResult = MAX_TEXT_DETECT_RESULT_DEFAULT
@@ -78,7 +84,7 @@ func (c *Client) Init(options *Options) (err error) {
 func (c *Client) CallGoogleVision(request *vision.BatchAnnotateImagesRequest) (response *vision.BatchAnnotateImagesResponse, err error) {
 	logrus.WithField("_func_", "CallGoogleVision").WithField("request", request).Infoln()
 
-	response, err = c.service.Images.Annotate(request).Do(&CallOptionKey{})
+	response, err = c.service.Images.Annotate(request).Do(&CallOptionKey{ApiKey: c.options.ApiKey})
 	if err != nil {
 		return nil, errors.WithMessage(err, "Images.Annotate failed")
 	}

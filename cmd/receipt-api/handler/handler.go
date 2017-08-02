@@ -10,8 +10,9 @@ import (
 )
 
 type Options struct {
-	ProxyUrl string
-	CacheDir string
+	ProxyUrl     string
+	CacheDir     string
+	GoogleApiKey string
 }
 
 type ReceiptExtractHandler struct {
@@ -34,8 +35,9 @@ func (h *ReceiptExtractHandler) Init(options *Options) (err error) {
 
 	h.ReceiptService = receipt.NewService()
 	err = h.ReceiptService.Init(&receipt.Options{
-		ProxyUrl: h.Options.ProxyUrl,
-		CacheDir: h.Options.CacheDir,
+		ProxyUrl:     h.Options.ProxyUrl,
+		CacheDir:     h.Options.CacheDir,
+		GoogleApiKey: h.Options.GoogleApiKey,
 	})
 
 	if err != nil {

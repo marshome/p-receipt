@@ -1,12 +1,6 @@
 package models
 
 type ErrorInvalidArgument struct {
-
-	// Error code
-	// Required: true
-	Field *string `json:"field"`
-
-	// Error msg
-	// Required: true
+	Field   *string `json:"field"`
 	Message *string `json:"message"`
 }

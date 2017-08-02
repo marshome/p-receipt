@@ -8,8 +8,9 @@ import (
 )
 
 type Options struct {
-	ProxyUrl string
-	CacheDir string
+	ProxyUrl     string
+	CacheDir     string
+	GoogleApiKey string
 }
 
 type Service struct {
@@ -35,6 +36,7 @@ func (s *Service) Init(options *Options) (err error) {
 		ProxyUrl:            options.ProxyUrl,
 		MaxTextDetectResult: 20,
 		CacheDir:            s.options.CacheDir,
+		ApiKey:              s.options.GoogleApiKey,
 	})
 	if err != nil {
 		return
