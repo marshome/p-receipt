@@ -33,7 +33,6 @@ func main() {
 
 			api.ReceiptsReportHandler = operations.ReceiptsReportHandlerFunc(
 				func(params operations.ReceiptsReportParams) middleware.Responder {
-					logrus.Infoln("aaaa")
 					logrus.WithField("_path_", "ReceiptsReport").WithField("params", jsonhelper.SimpleJson(params)).Infoln()
 					response := h.Report(params)
 					logrus.WithField("_path_", "ReceiptsReport").WithField("response", jsonhelper.SimpleJson(response)).Infoln()
@@ -44,7 +43,7 @@ func main() {
 				func(params operations.ReceiptsExtractParams) middleware.Responder {
 					logrus.WithField("_path_", "ReceiptsExtract").WithField("params", jsonhelper.SimpleJson(params)).Infoln()
 					response := h.Extract(params)
-					logrus.WithField("_path_", "ReceiptsExtract").WithField("response", jsonhelper.SimpleJson(response)).Infoln()
+					//logrus.WithField("_path_", "ReceiptsExtract").WithField("response", jsonhelper.SimpleJson(response)).Infoln()
 
 					return response
 				})
