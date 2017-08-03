@@ -22,6 +22,12 @@
         "operationId": "receipts_extract",
         "parameters": [
           {
+            "in": "header",
+            "name":"Access-Control-Allow-Origin",
+            "required": false,
+            "type": "string"
+          },
+          {
             "in": "body",
             "name": "body",
             "description": "Request",
@@ -36,6 +42,12 @@
             "description": "Response",
             "schema": {
               "$ref": "#/definitions/ReceiptExtractResponse"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin":{
+                "description": "cors",
+                "type": "string"
+              }
             }
           },
           "400": {

@@ -64,6 +64,8 @@ for the receipts extract operation typically these are written to a http.Request
 */
 type ReceiptsExtractParams struct {
 
+	/*AccessControlAllowOrigin*/
+	AccessControlAllowOrigin *string
 	/*Body
 	  Request
 
@@ -108,6 +110,17 @@ func (o *ReceiptsExtractParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithAccessControlAllowOrigin adds the accessControlAllowOrigin to the receipts extract params
+func (o *ReceiptsExtractParams) WithAccessControlAllowOrigin(accessControlAllowOrigin *string) *ReceiptsExtractParams {
+	o.SetAccessControlAllowOrigin(accessControlAllowOrigin)
+	return o
+}
+
+// SetAccessControlAllowOrigin adds the accessControlAllowOrigin to the receipts extract params
+func (o *ReceiptsExtractParams) SetAccessControlAllowOrigin(accessControlAllowOrigin *string) {
+	o.AccessControlAllowOrigin = accessControlAllowOrigin
+}
+
 // WithBody adds the body to the receipts extract params
 func (o *ReceiptsExtractParams) WithBody(body *models.ReceiptExtractRequest) *ReceiptsExtractParams {
 	o.SetBody(body)
@@ -126,6 +139,15 @@ func (o *ReceiptsExtractParams) WriteToRequest(r runtime.ClientRequest, reg strf
 		return err
 	}
 	var res []error
+
+	if o.AccessControlAllowOrigin != nil {
+
+		// header param Access-Control-Allow-Origin
+		if err := r.SetHeaderParam("Access-Control-Allow-Origin", *o.AccessControlAllowOrigin); err != nil {
+			return err
+		}
+
+	}
 
 	if o.Body == nil {
 		o.Body = new(models.ReceiptExtractRequest)

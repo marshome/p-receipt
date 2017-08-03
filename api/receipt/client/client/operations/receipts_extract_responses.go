@@ -54,6 +54,10 @@ func NewReceiptsExtractOK() *ReceiptsExtractOK {
 Response
 */
 type ReceiptsExtractOK struct {
+	/*cors
+	 */
+	AccessControlAllowOrigin string
+
 	Payload *models.ReceiptExtractResponse
 }
 
@@ -62,6 +66,9 @@ func (o *ReceiptsExtractOK) Error() string {
 }
 
 func (o *ReceiptsExtractOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response header Access-Control-Allow-Origin
+	o.AccessControlAllowOrigin = response.GetHeader("Access-Control-Allow-Origin")
 
 	o.Payload = new(models.ReceiptExtractResponse)
 

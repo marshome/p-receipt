@@ -45,11 +45,14 @@ func NewExtractContext(textAnnotation *models.TextAnnotation) (ctx *ExtractConte
 }
 
 func (ctx *ExtractContext) isTotalPriceName(s string) bool { //todo 税率，折扣
-	_, has := ctx.totalPriceNames[strings.ToLower(s)]
+	s = strings.Trim(strings.ToLower(s), ": ")
+	logrus.Infoln("isTotalPriceName " + s)
+	_, has := ctx.totalPriceNames[s]
 	return has
 }
 
 func (ctx *ExtractContext) isPrice(s string) (price float64, is bool) {
+	logrus.Infoln("isPrice " + s)
 	price, err := strconv.ParseFloat(strings.Replace(s, ",", "", -1), 64)
 	if err != nil {
 		return 0, false
@@ -62,39 +65,62 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 	logrus.Info("processParagraph")
 
 	if paragraph.Words != nil {
-		var s string
+		var w string
+		var line string
 		for _, word := range paragraph.Words {
 			if word.Symbols != nil {
 				for _, symbol := range word.Symbols {
-					s += symbol.Text
+					w += symbol.Text
+					line += symbol.Text
 					if symbol.Property != nil && symbol.Property.DetectedBreak != nil {
 						breakType := symbol.Property.DetectedBreak.Type
 						if breakType == "SPACE" {
-							s += " "
-						} else if breakType == "EOL_SURE_SPACE" {
-							logrus.Info(s + "\\n")
-
-							//first line would be title,but welcomes,todo
-							if ctx.Result.Title == "" {
-								ctx.Result.Title = s
-							}
+							logrus.Infoln("SPACE")
+							line += " "
 
 							//check total price name,last one
-							if ctx.isTotalPriceName(s) {
-								logrus.Infoln("total price name found " + s)
+							if ctx.isTotalPriceName(w) {
+								logrus.Infoln("total price name found " + w)
 								ctx.totalPriceNameFound = true
 							}
 
 							//total price
 							if ctx.totalPriceNameFound {
-								price, isPrice := ctx.isPrice(s)
+								price, isPrice := ctx.isPrice(w)
 								if isPrice {
-									logrus.Infoln("total price found " + s)
+									logrus.Infoln("total price found " + w)
 									ctx.totalPrice = price
+									ctx.totalPriceNameFound = false
 								}
 							}
 
-							s = ""
+							w = ""
+						} else if breakType == "EOL_SURE_SPACE" {
+							logrus.Info(line + "\\n")
+
+							//first line would be title,but welcomes,todo
+							if ctx.Result.Title == "" {
+								ctx.Result.Title = line
+							}
+
+							//check total price name,last one
+							if ctx.isTotalPriceName(w) {
+								logrus.Infoln("total price name found " + w)
+								ctx.totalPriceNameFound = true
+							}
+
+							//total price
+							if ctx.totalPriceNameFound {
+								price, isPrice := ctx.isPrice(w)
+								if isPrice {
+									logrus.Infoln("total price found " + w)
+									ctx.totalPrice = price
+									ctx.totalPriceNameFound = false
+								}
+							}
+
+							line = ""
+							w = ""
 						} else {
 							logrus.Fatalln(breakType)
 						}

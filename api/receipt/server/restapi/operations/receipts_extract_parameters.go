@@ -13,6 +13,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
+	strfmt "github.com/go-openapi/strfmt"
+
 	"github.com/marshome/p-vision/api/receipt/server/models"
 )
 
@@ -32,6 +34,10 @@ type ReceiptsExtractParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request
 
+	/*
+	  In: header
+	*/
+	AccessControlAllowOrigin *string
 	/*Request
 	  Required: true
 	  In: body
@@ -44,6 +50,10 @@ type ReceiptsExtractParams struct {
 func (o *ReceiptsExtractParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 	o.HTTPRequest = r
+
+	if err := o.bindAccessControlAllowOrigin(r.Header[http.CanonicalHeaderKey("Access-Control-Allow-Origin")], true, route.Formats); err != nil {
+		res = append(res, err)
+	}
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
@@ -72,5 +82,19 @@ func (o *ReceiptsExtractParams) BindRequest(r *http.Request, route *middleware.M
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (o *ReceiptsExtractParams) bindAccessControlAllowOrigin(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.AccessControlAllowOrigin = &raw
+
 	return nil
 }

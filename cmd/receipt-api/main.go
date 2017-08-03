@@ -8,6 +8,7 @@ import (
 	"github.com/marshome/p-vision/cmd/receipt-api/handler"
 	"github.com/marshome/x/jsonhelper"
 	"github.com/pkg/errors"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"net/http"
@@ -59,7 +60,7 @@ func main() {
 			addr := ":8080"
 			logrus.Infoln("addr=", addr)
 
-			err = http.ListenAndServe(addr, api.Serve(nil))
+			err = http.ListenAndServe(addr, cors.Default().Handler(api.Serve(nil)))
 			if err != nil {
 				return errors.WithStack(err)
 			}

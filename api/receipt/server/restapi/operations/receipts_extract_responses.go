@@ -21,6 +21,10 @@ const ReceiptsExtractOKCode int = 200
 swagger:response receiptsExtractOK
 */
 type ReceiptsExtractOK struct {
+	/*cors
+	  Required: true
+	*/
+	AccessControlAllowOrigin string `json:"Access-Control-Allow-Origin"`
 
 	/*
 	  In: Body
@@ -31,6 +35,17 @@ type ReceiptsExtractOK struct {
 // NewReceiptsExtractOK creates ReceiptsExtractOK with default headers values
 func NewReceiptsExtractOK() *ReceiptsExtractOK {
 	return &ReceiptsExtractOK{}
+}
+
+// WithAccessControlAllowOrigin adds the accessControlAllowOrigin to the receipts extract o k response
+func (o *ReceiptsExtractOK) WithAccessControlAllowOrigin(accessControlAllowOrigin string) *ReceiptsExtractOK {
+	o.AccessControlAllowOrigin = accessControlAllowOrigin
+	return o
+}
+
+// SetAccessControlAllowOrigin sets the accessControlAllowOrigin to the receipts extract o k response
+func (o *ReceiptsExtractOK) SetAccessControlAllowOrigin(accessControlAllowOrigin string) {
+	o.AccessControlAllowOrigin = accessControlAllowOrigin
 }
 
 // WithPayload adds the payload to the receipts extract o k response
@@ -46,6 +61,13 @@ func (o *ReceiptsExtractOK) SetPayload(payload *models.ReceiptExtractResponse) {
 
 // WriteResponse to the client
 func (o *ReceiptsExtractOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	// response header Access-Control-Allow-Origin
+
+	accessControlAllowOrigin := o.AccessControlAllowOrigin
+	if accessControlAllowOrigin != "" {
+		rw.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
+	}
 
 	rw.WriteHeader(200)
 	if o.Payload != nil {

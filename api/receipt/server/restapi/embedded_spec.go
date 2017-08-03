@@ -36,6 +36,11 @@ func init() {
         "operationId": "receipts_extract",
         "parameters": [
           {
+            "type": "string",
+            "name": "Access-Control-Allow-Origin",
+            "in": "header"
+          },
+          {
             "description": "Request",
             "name": "body",
             "in": "body",
@@ -50,6 +55,12 @@ func init() {
             "description": "Response",
             "schema": {
               "$ref": "#/definitions/ReceiptExtractResponse"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "cors"
+              }
             }
           },
           "400": {

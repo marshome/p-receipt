@@ -63,7 +63,9 @@ func (h *ReceiptExtractHandler) Extract(params operations.ReceiptsExtractParams)
 	response.ReceiptInfo = fromReceiptInfo(result.ReceiptInfo)
 	response.FullTextAnnotation = fromTextAnnotation(result.TextAnnotation)
 
-	return operations.NewReceiptsExtractOK().WithPayload(response)
+	return operations.NewReceiptsExtractOK().
+		WithAccessControlAllowOrigin("*").
+		WithPayload(response)
 }
 
 func (h *ReceiptExtractHandler) Report(params operations.ReceiptsReportParams) middleware.Responder {
