@@ -6,7 +6,6 @@ import (
 	"github.com/marshome/p-vision/api/receipt/server/restapi"
 	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
 	"github.com/marshome/p-vision/cmd/receipt-api/handler"
-	"github.com/marshome/x/jsonhelper"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
@@ -15,6 +14,8 @@ import (
 )
 
 func main() {
+	var bind_addr string
+
 	var options = &handler.Options{
 		CacheDir: "./google_vision_cache",
 	}
@@ -38,18 +39,12 @@ func main() {
 
 			api.ReceiptsReportHandler = operations.ReceiptsReportHandlerFunc(
 				func(params operations.ReceiptsReportParams) middleware.Responder {
-					logrus.WithField("_path_", "ReceiptsReport").WithField("params", jsonhelper.SimpleJson(params)).Infoln()
 					response := h.Report(params)
-					logrus.WithField("_path_", "ReceiptsReport").WithField("response", jsonhelper.SimpleJson(response)).Infoln()
-
 					return response
 				})
 			api.ReceiptsExtractHandler = operations.ReceiptsExtractHandlerFunc(
 				func(params operations.ReceiptsExtractParams) middleware.Responder {
-					logrus.WithField("_path_", "ReceiptsExtract").WithField("params", jsonhelper.SimpleJson(params)).Infoln()
 					response := h.Extract(params)
-					//logrus.WithField("_path_", "ReceiptsExtract").WithField("response", jsonhelper.SimpleJson(response)).Infoln()
-
 					return response
 				})
 
@@ -57,10 +52,9 @@ func main() {
 				logrus.WithField("_api_", "MarsReceiptAPI").Infof(format, args)
 			}
 
-			addr := ":8080"
-			logrus.Infoln("addr=", addr)
+			logrus.Infoln("addr=", bind_addr)
 
-			err = http.ListenAndServe(addr, cors.Default().Handler(api.Serve(nil)))
+			err = http.ListenAndServe(bind_addr, cors.Default().Handler(api.Serve(nil)))
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -69,6 +63,7 @@ func main() {
 		},
 	}
 
+	cmd.PersistentFlags().StringVar(&bind_addr, "bind-addr", ":", "api server bind addr")
 	cmd.PersistentFlags().StringVar(&options.GoogleApiKey, "google-api-key", "", "googleApiKey")
 	cmd.PersistentFlags().StringVar(&options.ProxyUrl, "proxy-url", "", "proxy")
 

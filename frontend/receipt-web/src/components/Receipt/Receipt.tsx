@@ -1,20 +1,26 @@
 import * as React from 'react';
+import './Receipt.css'
+import CircularProgress from 'material-ui/CircularProgress';
 
-interface Props{
+const api_url:string='http://59.110.221.192:8081//api/receipt/v1/receipts_extract'
+//const api_url:string='http://127.0.0.1:8080//api/receipt/v1/receipts_extract'
+
+interface Props {
 
 }
 
-interface Result{
-    fullText:string
-    lang:string
-    title:string
-    totalPrice:string
+interface Result {
+    fullText: string
+    lang: string
+    title: string
+    totalPrice: string
 }
 
 interface State {
-    file: File|null
+    file: File | null
     imagePreviewUrl: string
-    result:Result
+    uploading: boolean
+    result: Result
 }
 
 class Receipt extends React.Component<Props, State> {
@@ -23,6 +29,7 @@ class Receipt extends React.Component<Props, State> {
         this.state = {
             file: null,
             imagePreviewUrl: '',
+            uploading: true,
             result: {
                 fullText: '',
                 lang: '',
@@ -32,29 +39,26 @@ class Receipt extends React.Component<Props, State> {
         };
     }
 
-    _handleSubmit(e) {
+    _handleUpload(e) {
         e.preventDefault();
 
         if (!this.state.imagePreviewUrl) {
+            alert("请先选择图片")
             return
-        }
-
-        if (this.state.file) {
-            console.log("_handleSubmit " + this.state.file.name)
         }
 
         if (!window.fetch) {
-            alert("请使用更好的浏览器")
+            alert('请使用更好的浏览器');
             return
         }
 
-        let component = this
+        let component = this;
 
-        fetch("http://127.0.0.1:8080/api/receipt/v1/receipts_extract", {
-            method: "post",
+        fetch(api_url, {
+            method: 'post',
             body: JSON.stringify({
-                "image": {
-                    "contentBase64": this.state.imagePreviewUrl.substring(this.state.imagePreviewUrl.indexOf(',') + 1)
+                'image': {
+                    'contentBase64': this.state.imagePreviewUrl.substring(this.state.imagePreviewUrl.indexOf(',') + 1)
                 }
             }),
             headers: {
@@ -62,20 +66,41 @@ class Receipt extends React.Component<Props, State> {
                 'content-type': 'application/json'
             }
         }).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            console.log(json)
-            component.setState({
-                result: {
-                    fullText: json.receiptInfo.fullText,
-                    lang: json.receiptInfo.lang,
-                    title: json.receiptInfo.title,
-                    totalPrice: json.receiptInfo.totalPrice
+            if (response.status > 299) {
+                response.json().then(function (json) {
+                    alert(response.status + " " + json)
+                });
+
+                component.setState({
+                    result: {
+                        fullText: '',
+                        lang: '',
+                        title: '',
+                        totalPrice: ''
+                    }
+                });
+
+                return
+            }
+
+            response.json().then(function (json) {
+                if (!json) {
+                    return
                 }
+
+                component.setState({
+                    result: {
+                        fullText: json.receiptInfo.fullText,
+                        lang: json.receiptInfo.lang,
+                        title: json.receiptInfo.title,
+                        totalPrice: json.receiptInfo.totalPrice
+                    }
+                });
+            }).catch(function (ex) {
+                alert(ex)
             })
-            console.log(component.state)
         }).catch(function (ex) {
-            console.log(ex)
+            alert(ex)
         })
     }
 
@@ -87,63 +112,82 @@ class Receipt extends React.Component<Props, State> {
             return
         }
 
-        console.log("_handleImageChange " + file.name)
+        if(!file.name.endsWith(".jpg")&&!file.name.endsWith(".jpeg")&&!file.name.endsWith(".png")){
+            alert("请选择jpg,jpeg,png格式的图片")
+            return
+        }
 
         let reader = new FileReader();
         reader.onloadend = () => {
             this.setState({
                 file: file,
-                imagePreviewUrl: reader.result
+                imagePreviewUrl: reader.result,
+                result: {
+                    fullText: '',
+                    lang: '',
+                    title: '',
+                    totalPrice: ''
+                }
             });
-            console.log(reader.result)
-        }
+        };
         reader.onerror = function (error) {
-            alert("错误 " + error)
+            alert('错误 ' + error)
         };
 
         reader.readAsDataURL(file)
     }
 
     render() {
-        let {imagePreviewUrl} = this.state;
-        let $imagePreview: any;
-        if (imagePreviewUrl) {
-            $imagePreview = (<img src={imagePreviewUrl}/>);
+        let fileInput: any
+
+        let imagePreview: any;
+        if (this.state.imagePreviewUrl) {
+            imagePreview = (<img className="Receipt-preview" src={this.state.imagePreviewUrl}/>);
         }
 
-        console.log(this.state.result.fullText)
+        let progressView:any
+        if(this.state.uploading){
+            progressView=(<CircularProgress size={60} thickness={10}/>);
+        }
 
-        var fullTextStyle = {
-            width: 720,
-            height: 1920,
-            fontSize: 20
+        let resultView: any;
+        if (this.state.result.fullText) {
+            resultView = (
+                <div>
+                    <div>
+                        <p>
+                            <label className="Receipt-resultName">语言：</label>
+                            <label className="Receipt-resultText">{this.state.result.lang}</label></p>
+                        <p>
+                            <label className="Receipt-resultName">标题：</label>
+                            <label className="Receipt-resultText">{this.state.result.title}</label></p>
+                        <p>
+                            <label className="Receipt-resultName">金额：</label>
+                            <label className="Receipt-resultText">{this.state.result.totalPrice}</label></p>
+                    </div>
+                    <div>
+                        <textarea className="Receipt-fullText" value={this.state.result.fullText}/>
+                    </div>
+                </div>);
         }
 
         return (
-            <div>
-                <form onSubmit={(e) => this._handleSubmit(e)}>
-                    <input
-                        type="file"
-                        onChange={(e) => this._handleImageChange(e)}/>
-                    <button
-                        type="submit"
-                        onClick={(e) => this._handleSubmit(e)}>上传图片
+            <div className="Receipt">
+                <form>
+                    <a className="Receipt-fileSelector" href="javascript:void(0);" onClick={function () {
+                        if(fileInput){
+                            fileInput.click()
+                        }
+                    }}>选择文件</a>
+                    <input className="Receipt-file" type="file" ref={(input) => {
+                        fileInput = input
+                    }} onChange={(e) => this._handleImageChange(e)}/>
+                    <button className="Receipt-upload" type="submit" onClick={(e) => this._handleUpload(e)}>上传图片
                     </button>
                 </form>
-                <div>
-                    <div>
-                        <p><label>语言：</label><label>{this.state.result.lang}</label></p>
-                        <p><label>标题：</label><label>{this.state.result.title}</label></p>
-                        <p><label>金额：</label><label>{this.state.result.totalPrice}</label></p>
-                    </div>
-                    <div>
-                        {$imagePreview}
-                    </div>
-                    <div>
-                        <p><textarea value={this.state.result.fullText} style={fullTextStyle}>
-                        </textarea></p>
-                    </div>
-                </div>
+                <div>{progressView}</div>
+                <div>{imagePreview}</div>
+                <div>{resultView}</div>
             </div>
         )
     }

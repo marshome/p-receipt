@@ -39,6 +39,13 @@ func (o *ReceiptsExtractReader) ReadResponse(response runtime.ClientResponse, co
 		}
 		return nil, result
 
+	case 500:
+		result := NewReceiptsExtractInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	default:
 		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
@@ -87,10 +94,10 @@ func NewReceiptsExtractBadRequest() *ReceiptsExtractBadRequest {
 
 /*ReceiptsExtractBadRequest handles this case with default header values.
 
-failed
+invalid argument
 */
 type ReceiptsExtractBadRequest struct {
-	Payload *models.ErrorInvalidArgument
+	Payload string
 }
 
 func (o *ReceiptsExtractBadRequest) Error() string {
@@ -99,10 +106,35 @@ func (o *ReceiptsExtractBadRequest) Error() string {
 
 func (o *ReceiptsExtractBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ErrorInvalidArgument)
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewReceiptsExtractInternalServerError creates a ReceiptsExtractInternalServerError with default headers values
+func NewReceiptsExtractInternalServerError() *ReceiptsExtractInternalServerError {
+	return &ReceiptsExtractInternalServerError{}
+}
+
+/*ReceiptsExtractInternalServerError handles this case with default header values.
+
+internal
+*/
+type ReceiptsExtractInternalServerError struct {
+	Payload string
+}
+
+func (o *ReceiptsExtractInternalServerError) Error() string {
+	return fmt.Sprintf("[POST /receipts_extract][%d] receiptsExtractInternalServerError  %+v", 500, o.Payload)
+}
+
+func (o *ReceiptsExtractInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 

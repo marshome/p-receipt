@@ -7,6 +7,7 @@ import (
 	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
 	"github.com/marshome/p-vision/services/receipt"
 	"github.com/sirupsen/logrus"
+	"strings"
 )
 
 type Options struct {
@@ -50,13 +51,13 @@ func (h *ReceiptExtractHandler) Init(options *Options) (err error) {
 func (h *ReceiptExtractHandler) Extract(params operations.ReceiptsExtractParams) middleware.Responder {
 	if params.Body == nil || params.Body.Image == nil || params.Body.Image.ContentBase64 == nil {
 		logrus.WithField("_func_", "ReceiptExtractHandler.Extract").Errorln("params failed", params)
-		return operations.NewReceiptsExtractBadRequest()
+		return operations.NewReceiptsExtractBadRequest().WithPayload("请求数据错误")
 	}
 
 	result, err := h.ReceiptService.Extract(*params.Body.Image.ContentBase64)
 	if err != nil {
 		logrus.WithField("func", "ReceiptExtractHandler.Extract").Errorln(err)
-		return operations.NewReceiptsExtractBadRequest()
+		return operations.NewReceiptsExtractInternalServerError().WithPayload(strings.Replace(err.Error(), "DqrNp9RdNECDM2LIszWwp", "", -1))
 	}
 
 	response := &models.ReceiptExtractResponse{}

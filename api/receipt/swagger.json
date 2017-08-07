@@ -51,9 +51,15 @@
             }
           },
           "400": {
-            "description": "failed",
+            "description": "invalid argument",
             "schema": {
-              "$ref": "#/definitions/ErrorInvalidArgument"
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "internal",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -86,25 +92,6 @@
     }
   },
   "definitions": {
-    "ErrorInvalidArgument": {
-      "id": "ErrorInvalidArgument",
-      "description": "ErrorInvalidArgument",
-      "type": "object",
-      "properties": {
-        "field": {
-          "description": "Error code",
-          "type": "string"
-        },
-        "message": {
-          "description": "Error msg",
-          "type": "string"
-        }
-      },
-      "required": [
-        "field",
-        "message"
-      ]
-    },
     "ReceiptExtractRequest": {
       "id": "ReceiptExtractRequest",
       "description": "",

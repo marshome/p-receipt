@@ -64,9 +64,15 @@ func init() {
             }
           },
           "400": {
-            "description": "failed",
+            "description": "invalid argument",
             "schema": {
-              "$ref": "#/definitions/ErrorInvalidArgument"
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "internal",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -166,25 +172,6 @@ func init() {
         },
         "languageCode": {
           "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp://www.unicode.org/reports/tr35/#Unicode_locale_identifier.",
-          "type": "string"
-        }
-      }
-    },
-    "ErrorInvalidArgument": {
-      "id": "ErrorInvalidArgument",
-      "description": "ErrorInvalidArgument",
-      "type": "object",
-      "required": [
-        "field",
-        "message"
-      ],
-      "properties": {
-        "field": {
-          "description": "Error code",
-          "type": "string"
-        },
-        "message": {
-          "description": "Error msg",
           "type": "string"
         }
       }

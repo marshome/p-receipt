@@ -1,0 +1,45 @@
+.Receipt{
+    max-width: 480px;
+    margin: auto;
+}
+
+.Receipt-file{
+    border: 0;
+    display: none;
+}
+
+.Receipt-fileSelector {
+    font-size: large;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.Receipt-upload{
+    font-size: large;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.Receipt-preview{
+    width: 100%;
+    height: 100%;
+}
+
+.Receipt-fullText{
+    width: 100%;
+    height: 1024px;
+    font-size: large;
+    background-color:black;
+    color: white;
+}
+
+.Receipt-resultName{
+    font-size: large;
+    font-weight: bold;
+    text-align: left;
+    float: left;
+}
+
+.Receipt-resultText{
+    font-size: large;
+}

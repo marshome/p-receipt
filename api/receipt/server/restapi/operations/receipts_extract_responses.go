@@ -81,7 +81,7 @@ func (o *ReceiptsExtractOK) WriteResponse(rw http.ResponseWriter, producer runti
 // ReceiptsExtractBadRequestCode is the HTTP code returned for type ReceiptsExtractBadRequest
 const ReceiptsExtractBadRequestCode int = 400
 
-/*ReceiptsExtractBadRequest failed
+/*ReceiptsExtractBadRequest invalid argument
 
 swagger:response receiptsExtractBadRequest
 */
@@ -90,7 +90,7 @@ type ReceiptsExtractBadRequest struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.ErrorInvalidArgument `json:"body,omitempty"`
+	Payload string `json:"body,omitempty"`
 }
 
 // NewReceiptsExtractBadRequest creates ReceiptsExtractBadRequest with default headers values
@@ -99,13 +99,13 @@ func NewReceiptsExtractBadRequest() *ReceiptsExtractBadRequest {
 }
 
 // WithPayload adds the payload to the receipts extract bad request response
-func (o *ReceiptsExtractBadRequest) WithPayload(payload *models.ErrorInvalidArgument) *ReceiptsExtractBadRequest {
+func (o *ReceiptsExtractBadRequest) WithPayload(payload string) *ReceiptsExtractBadRequest {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the receipts extract bad request response
-func (o *ReceiptsExtractBadRequest) SetPayload(payload *models.ErrorInvalidArgument) {
+func (o *ReceiptsExtractBadRequest) SetPayload(payload string) {
 	o.Payload = payload
 }
 
@@ -113,10 +113,51 @@ func (o *ReceiptsExtractBadRequest) SetPayload(payload *models.ErrorInvalidArgum
 func (o *ReceiptsExtractBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(400)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
 	}
+
+}
+
+// ReceiptsExtractInternalServerErrorCode is the HTTP code returned for type ReceiptsExtractInternalServerError
+const ReceiptsExtractInternalServerErrorCode int = 500
+
+/*ReceiptsExtractInternalServerError internal
+
+swagger:response receiptsExtractInternalServerError
+*/
+type ReceiptsExtractInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
+}
+
+// NewReceiptsExtractInternalServerError creates ReceiptsExtractInternalServerError with default headers values
+func NewReceiptsExtractInternalServerError() *ReceiptsExtractInternalServerError {
+	return &ReceiptsExtractInternalServerError{}
+}
+
+// WithPayload adds the payload to the receipts extract internal server error response
+func (o *ReceiptsExtractInternalServerError) WithPayload(payload string) *ReceiptsExtractInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the receipts extract internal server error response
+func (o *ReceiptsExtractInternalServerError) SetPayload(payload string) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ReceiptsExtractInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
