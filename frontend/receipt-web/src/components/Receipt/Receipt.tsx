@@ -3,8 +3,8 @@ import './Receipt.css'
 import CircularProgress from 'material-ui/CircularProgress';
 import Textarea from 'react-textarea-autosize';
 
-const api_url:string='http://59.110.221.192:8081//api/receipt/v1/receipts_extract'
-//const api_url:string='http://127.0.0.1:8080//api/receipt/v1/receipts_extract'
+//const api_url:string='http://59.110.221.192:8081//api/receipt/v1/receipts_extract'
+const api_url:string='http://127.0.0.1:8080//api/receipt/v1/receipts_extract'
 
 interface Props {
 

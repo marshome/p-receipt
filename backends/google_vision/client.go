@@ -94,6 +94,18 @@ func (c *Client) CallGoogleVision(request *vision.BatchAnnotateImagesRequest) (r
 	return response, nil
 }
 
+func (c *Client) cacheResponse(cacheFileName string, response *vision.BatchAnnotateImagesResponse) {
+	jsonData, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		logrus.Errorln(errors.WithMessage(err, "内部错误：marshal response failed "))
+	} else {
+		err = c.cache.Save(cacheFileName, jsonData)
+		if err != nil {
+			logrus.Errorln(err)
+		}
+	}
+}
+
 func (c *Client) TextDetection(imageBase64 string) (textAnnotation *models.TextAnnotation, err error) {
 	cacheFileName := c.cache.CalcFileName(imageBase64)
 	cacheData := c.cache.Load(cacheFileName)
@@ -107,6 +119,10 @@ func (c *Client) TextDetection(imageBase64 string) (textAnnotation *models.TextA
 				logrus.Errorln(err.Error())
 			}
 		} else {
+			if response.Responses[0].FullTextAnnotation == nil {
+				return nil, fmt.Errorf("未能识别图片中的文字，请选择包含清晰文字的图片")
+			}
+
 			return fromTextAnnotation(response.Responses[0].FullTextAnnotation), nil
 		}
 	}
@@ -134,18 +150,12 @@ func (c *Client) TextDetection(imageBase64 string) (textAnnotation *models.TextA
 	}
 
 	if response.Responses[0].FullTextAnnotation == nil {
+		c.cacheResponse(cacheFileName, response)
+
 		return nil, fmt.Errorf("未能识别图片中的文字，请选择包含清晰文字的图片")
 	}
 
-	jsonData, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		logrus.Errorln(errors.WithMessage(err, "内部错误：marshal response failed "))
-	} else {
-		err = c.cache.Save(cacheFileName, jsonData)
-		if err != nil {
-			logrus.Errorln(err)
-		}
-	}
+	c.cacheResponse(cacheFileName, response)
 
 	return fromTextAnnotation(response.Responses[0].FullTextAnnotation), nil
 }
