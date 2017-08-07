@@ -29,7 +29,7 @@ class Receipt extends React.Component<Props, State> {
         this.state = {
             file: null,
             imagePreviewUrl: '',
-            uploading: true,
+            uploading: false,
             result: {
                 fullText: '',
                 lang: '',
@@ -54,6 +54,8 @@ class Receipt extends React.Component<Props, State> {
 
         let component = this;
 
+        component.setState({uploading: true})
+
         fetch(api_url, {
             method: 'post',
             body: JSON.stringify({
@@ -66,6 +68,8 @@ class Receipt extends React.Component<Props, State> {
                 'content-type': 'application/json'
             }
         }).then(function (response) {
+            component.setState({uploading: false})
+
             if (response.status > 299) {
                 response.json().then(function (json) {
                     alert(response.status + " " + json)
@@ -100,6 +104,7 @@ class Receipt extends React.Component<Props, State> {
                 alert(ex)
             })
         }).catch(function (ex) {
+            component.setState({uploading: false})
             alert(ex)
         })
     }
@@ -112,7 +117,7 @@ class Receipt extends React.Component<Props, State> {
             return
         }
 
-        if(!file.name.endsWith(".jpg")&&!file.name.endsWith(".jpeg")&&!file.name.endsWith(".png")){
+        if (!file.name.endsWith(".jpg") && !file.name.endsWith(".jpeg") && !file.name.endsWith(".png")) {
             alert("请选择jpg,jpeg,png格式的图片")
             return
         }
@@ -145,9 +150,11 @@ class Receipt extends React.Component<Props, State> {
             imagePreview = (<img className="Receipt-preview" src={this.state.imagePreviewUrl}/>);
         }
 
-        let progressView:any
-        if(this.state.uploading){
-            progressView=(<CircularProgress size={60} thickness={10}/>);
+        let progressView: any
+        if (this.state.uploading) {
+            progressView = (<div className="Receipt-progress">
+                <CircularProgress size={60} thickness={10}/>
+            </div>);
         }
 
         let resultView: any;
@@ -175,7 +182,7 @@ class Receipt extends React.Component<Props, State> {
             <div className="Receipt">
                 <form>
                     <a className="Receipt-fileSelector" href="javascript:void(0);" onClick={function () {
-                        if(fileInput){
+                        if (fileInput) {
                             fileInput.click()
                         }
                     }}>选择文件</a>
@@ -185,9 +192,11 @@ class Receipt extends React.Component<Props, State> {
                     <button className="Receipt-upload" type="submit" onClick={(e) => this._handleUpload(e)}>上传图片
                     </button>
                 </form>
-                <div>{progressView}</div>
-                <div>{imagePreview}</div>
                 <div>{resultView}</div>
+                <div>
+                    {imagePreview}
+                    {progressView}
+                </div>
             </div>
         )
     }
