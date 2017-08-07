@@ -19,17 +19,21 @@ interface Result {
 interface State {
     file: File | null
     imagePreviewUrl: string
-    uploading: boolean
+    progressVisible: boolean
+    uploadingStartTime:Date|null
     result: Result
 }
 
 class Receipt extends React.Component<Props, State> {
+    timer
+
     constructor(props) {
         super(props);
         this.state = {
             file: null,
             imagePreviewUrl: '',
-            uploading: false,
+            progressVisible: false,
+            uploadingStartTime: null,
             result: {
                 fullText: '',
                 lang: '',
@@ -37,6 +41,16 @@ class Receipt extends React.Component<Props, State> {
                 totalPrice: ''
             }
         };
+    }
+
+    componentDidMount() {
+        this.timer = setInterval(() => {
+            if (this.state.uploadingStartTime != null && !this.state.progressVisible) {
+                if ((new Date().getTime() - this.state.uploadingStartTime.getTime() > 500)) {
+                    this.setState({progressVisible: true})
+                }
+            }
+        }, 50)
     }
 
     _handleUpload(e) {
@@ -54,7 +68,9 @@ class Receipt extends React.Component<Props, State> {
 
         let component = this;
 
-        component.setState({uploading: true})
+        component.setState({
+            uploadingStartTime: new Date()
+        });
 
         fetch(api_url, {
             method: 'post',
@@ -68,7 +84,7 @@ class Receipt extends React.Component<Props, State> {
                 'content-type': 'application/json'
             }
         }).then(function (response) {
-            component.setState({uploading: false})
+            component.setState({progressVisible: false, uploadingStartTime: null})
 
             if (response.status > 299) {
                 response.json().then(function (json) {
@@ -104,7 +120,7 @@ class Receipt extends React.Component<Props, State> {
                 alert(ex)
             })
         }).catch(function (ex) {
-            component.setState({uploading: false})
+            component.setState({progressVisible: false, uploadingStartTime: null})
             alert(ex)
         })
     }
@@ -151,7 +167,7 @@ class Receipt extends React.Component<Props, State> {
         }
 
         let progressView: any
-        if (this.state.uploading) {
+        if (this.state.progressVisible) {
             progressView = (<div className="Receipt-progress">
                 <CircularProgress size={60} thickness={10}/>
             </div>);
