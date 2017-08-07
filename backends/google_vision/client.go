@@ -126,20 +126,20 @@ func (c *Client) TextDetection(imageBase64 string) (textAnnotation *models.TextA
 	}
 	response, err := c.CallGoogleVision(request)
 	if err != nil {
-		return nil, errors.WithMessage(err, "TextDetection failed")
+		return nil, errors.WithMessage(err, "后端服务失败：TextDetection failed")
 	}
 
 	if response.Responses == nil || len(response.Responses) != 1 {
-		return nil, fmt.Errorf("Images.Annotate response.Responses count failed")
+		return nil, fmt.Errorf("后端服务失败：Images.Annotate response.Responses count failed")
 	}
 
 	if response.Responses[0].FullTextAnnotation == nil {
-		return nil, fmt.Errorf("Responses[].FullTextAnnotation is nil")
+		return nil, fmt.Errorf("未能识别图片中的文字，请选择包含清晰文字的图片")
 	}
 
 	jsonData, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
-		logrus.Errorln(errors.WithMessage(err, "marshal response failed "))
+		logrus.Errorln(errors.WithMessage(err, "内部错误：marshal response failed "))
 	} else {
 		err = c.cache.Save(cacheFileName, jsonData)
 		if err != nil {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './Receipt.css'
 import CircularProgress from 'material-ui/CircularProgress';
+import Textarea from 'react-textarea-autosize';
 
 const api_url:string='http://59.110.221.192:8081//api/receipt/v1/receipts_extract'
 //const api_url:string='http://127.0.0.1:8080//api/receipt/v1/receipts_extract'
@@ -121,7 +122,7 @@ class Receipt extends React.Component<Props, State> {
             })
         }).catch(function (ex) {
             component.setState({progressVisible: false, uploadingStartTime: null})
-            alert(ex)
+            alert("网络异常: " + ex)
         })
     }
 
@@ -189,7 +190,7 @@ class Receipt extends React.Component<Props, State> {
                             <label className="Receipt-resultText">{this.state.result.totalPrice}</label></p>
                     </div>
                     <div>
-                        <textarea className="Receipt-fullText" value={this.state.result.fullText}/>
+                        <Textarea className="Receipt-fullText" value={this.state.result.fullText}/>
                     </div>
                 </div>);
         }
