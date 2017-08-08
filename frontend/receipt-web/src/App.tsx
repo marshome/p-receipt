@@ -12,7 +12,9 @@ class App extends React.Component<{}, {}> {
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo" />
-                    <h2>Welcome to Mars</h2>
+                    <div>
+                        <label className="App-intro">Welcome to Mars</label>
+                    </div>
                 </div>
                 <div>
                     <Receipt/>

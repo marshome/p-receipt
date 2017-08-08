@@ -5,6 +5,8 @@ import Textarea from 'react-textarea-autosize';
 
 //const api_url:string='http://59.110.221.192:8081//api/receipt/v1/receipts_extract'
 const api_url:string='http://127.0.0.1:8080//api/receipt/v1/receipts_extract'
+const gitHubLogo=require('./GitHub-Mark-64px.png')
+const googleCloudIcon=require('./GoogleCloudIcon.png')
 
 interface Props {
 
@@ -89,7 +91,7 @@ class Receipt extends React.Component<Props, State> {
 
             if (response.status > 299) {
                 response.json().then(function (json) {
-                    alert(response.status + " " + json)
+                    alert(response.status + " " + json.error)
                 });
 
                 component.setState({
@@ -208,6 +210,8 @@ class Receipt extends React.Component<Props, State> {
                     }} onChange={(e) => this._handleImageChange(e)}/>
                     <button className="Receipt-upload" type="submit" onClick={(e) => this._handleUpload(e)}>上传图片
                     </button>
+                    <a href="https://github.com/marshome/p-vision"><img className="App-gitHubLogo" src={gitHubLogo}/></a>
+                    <a href="https://cloud.google.com/vision/docs/"><img className="App-gitHubLogo" src={googleCloudIcon}/></a>
                 </form>
                 <div>{resultView}</div>
                 <div>

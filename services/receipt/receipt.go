@@ -2,6 +2,7 @@ package receipt
 
 import (
 	"github.com/marshome/p-vision/models"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
@@ -95,7 +96,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 							}
 
 							w = ""
-						} else if breakType == "EOL_SURE_SPACE" {
+						} else if breakType == "EOL_SURE_SPACE" || breakType == "LINE_BREAK" {
 							logrus.Info(line + "\\n")
 
 							//first line would be title,but welcomes,todo
@@ -122,7 +123,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 							line = ""
 							w = ""
 						} else {
-							logrus.Fatalln(breakType)
+							panic(errors.New("unknown BreakType: " + breakType))
 						}
 					}
 				}
