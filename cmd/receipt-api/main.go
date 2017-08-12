@@ -6,6 +6,7 @@ import (
 	"github.com/marshome/p-vision/api/receipt/server/restapi"
 	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
 	"github.com/marshome/p-vision/cmd/receipt-api/handler"
+	"github.com/marshome/x/httphelper"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
@@ -39,13 +40,12 @@ func main() {
 
 			api.ReceiptsReportHandler = operations.ReceiptsReportHandlerFunc(
 				func(params operations.ReceiptsReportParams) middleware.Responder {
-					response := h.Report(params)
-					return response
+					return h.Report(params)
 				})
 			api.ReceiptsExtractHandler = operations.ReceiptsExtractHandlerFunc(
 				func(params operations.ReceiptsExtractParams) middleware.Responder {
-					response := h.Extract(params)
-					return response
+					panic(errors.New("aaaa"))
+					return h.Extract(params)
 				})
 
 			api.Logger = func(format string, args ...interface{}) {
@@ -54,7 +54,8 @@ func main() {
 
 			logrus.Infoln("addr=", bind_addr)
 
-			err = http.ListenAndServe(bind_addr, cors.Default().Handler(api.Serve(nil)))
+			err = http.ListenAndServe(bind_addr,
+				httphelper.Recovery(cors.Default().Handler(api.Serve(nil))))
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -69,6 +70,6 @@ func main() {
 
 	err := cmd.Execute()
 	if err != nil {
-		logrus.Fatalln(err)
+		logrus.Errorln(err)
 	}
 }

@@ -91,7 +91,11 @@ class Receipt extends React.Component<Props, State> {
 
             if (response.status > 299) {
                 response.json().then(function (json) {
-                    alert(response.status + " " + json.error)
+                    if (json){
+                        alert(response.status+"\n"+ JSON.stringify(json,null,"  "))
+                    }else{
+                        alert(response.status )
+                    }
                 });
 
                 component.setState({
