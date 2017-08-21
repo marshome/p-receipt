@@ -3,9 +3,9 @@ package handler
 import (
 	"fmt"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/marshome/p-vision/api/receipt/server/models"
-	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
-	"github.com/marshome/p-vision/services/receipt"
+	"github.com/marshome/p-receipt/api/receipt/server/models"
+	"github.com/marshome/p-receipt/api/receipt/server/restapi/operations"
+	"github.com/marshome/p-receipt/services/receipt"
 	"go.uber.org/zap"
 	"reflect"
 	"strings"

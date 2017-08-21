@@ -3,7 +3,7 @@ package google_vision
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/marshome/p-vision/models"
+	"github.com/marshome/p-receipt/models"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/api/vision/v1"

@@ -214,7 +214,7 @@ class Receipt extends React.Component<Props, State> {
                     }} onChange={(e) => this._handleImageChange(e)}/>
                     <button className="Receipt-upload" type="submit" onClick={(e) => this._handleUpload(e)}>上传图片
                     </button>
-                    <a href="https://github.com/marshome/p-vision"><img className="App-gitHubLogo" src={gitHubLogo}/></a>
+                    <a href="https://github.com/marshome/p-receipt"><img className="App-gitHubLogo" src={gitHubLogo}/></a>
                     <a href="https://cloud.google.com/vision/docs/"><img className="App-gitHubLogo" src={googleCloudIcon}/></a>
                 </form>
                 <div>{resultView}</div>

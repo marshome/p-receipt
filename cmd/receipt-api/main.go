@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/marshome/p-vision/api/receipt/server/restapi"
-	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
-	"github.com/marshome/p-vision/cmd/receipt-api/handler"
+	"github.com/marshome/p-receipt/api/receipt/server/restapi"
+	"github.com/marshome/p-receipt/api/receipt/server/restapi/operations"
+	"github.com/marshome/p-receipt/cmd/receipt-api/handler"
 	"github.com/marshome/x/httphelper"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"

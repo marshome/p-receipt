@@ -2,8 +2,8 @@ package receipt
 
 import (
 	"fmt"
-	"github.com/marshome/p-vision/backends/google_vision"
-	"github.com/marshome/p-vision/models"
+	"github.com/marshome/p-receipt/backends/google_vision"
+	"github.com/marshome/p-receipt/models"
 	"go.uber.org/zap"
 	"reflect"
 )

@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/marshome/p-vision/api/receipt/server/models"
+	"github.com/marshome/p-receipt/api/receipt/server/models"
 )
 
 // ReceiptsExtractOKCode is the HTTP code returned for type ReceiptsExtractOK

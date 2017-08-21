@@ -20,7 +20,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
 
-	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
+	"github.com/marshome/p-receipt/api/receipt/server/restapi/operations"
 )
 
 const (

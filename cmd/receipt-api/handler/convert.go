@@ -1,8 +1,8 @@
 package handler
 
 import (
-	api "github.com/marshome/p-vision/api/receipt/server/models"
-	"github.com/marshome/p-vision/models"
+	api "github.com/marshome/p-receipt/api/receipt/server/models"
+	"github.com/marshome/p-receipt/models"
 )
 
 func fromReceiptInfo(p *models.ReceiptInfo) (r *api.ReceiptInfo) {

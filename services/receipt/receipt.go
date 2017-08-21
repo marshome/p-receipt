@@ -1,7 +1,7 @@
 package receipt
 
 import (
-	"github.com/marshome/p-vision/models"
+	"github.com/marshome/p-receipt/models"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"strconv"

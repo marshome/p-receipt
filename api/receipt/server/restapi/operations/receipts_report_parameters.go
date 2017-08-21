@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/marshome/p-vision/api/receipt/server/models"
+	"github.com/marshome/p-receipt/api/receipt/server/models"
 )
 
 // NewReceiptsReportParams creates a new ReceiptsReportParams object

@@ -1,7 +1,7 @@
 package google_vision
 
 import (
-	"github.com/marshome/p-vision/models"
+	"github.com/marshome/p-receipt/models"
 	"google.golang.org/api/vision/v1"
 )
 

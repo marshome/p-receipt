@@ -11,7 +11,7 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 	graceful "github.com/tylerb/graceful"
 
-	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
+	"github.com/marshome/p-receipt/api/receipt/server/restapi/operations"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten

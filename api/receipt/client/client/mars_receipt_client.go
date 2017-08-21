@@ -11,7 +11,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/marshome/p-vision/api/receipt/client/client/operations"
+	"github.com/marshome/p-receipt/api/receipt/client/client/operations"
 )
 
 // Default mars receipt HTTP client.

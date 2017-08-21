@@ -17,7 +17,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/marshome/p-vision/api/receipt/client/models"
+	"github.com/marshome/p-receipt/api/receipt/client/models"
 )
 
 // NewReceiptsExtractParams creates a new ReceiptsExtractParams object
