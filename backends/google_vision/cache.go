@@ -5,18 +5,25 @@ import (
 	"encoding/base64"
 	"github.com/marshome/x/filesystem"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strings"
 )
 
 type Cache struct {
-	Dir string
+	logger *zap.Logger
+	Dir    string
 }
 
 func NewCache(dir string) *Cache {
-	return &Cache{Dir: dir}
+	c := &Cache{
+		Dir: dir,
+	}
+	c.logger = zap.L().Named(reflect.TypeOf(*c).Name())
+
+	return c
 }
 
 func (c *Cache) getPath(fileName string) (filePath string) {
@@ -32,7 +39,7 @@ func (c *Cache) CalcFileName(imageBase64 string) (fileName string) {
 }
 
 func (c *Cache) Load(fileName string) (data []byte) {
-	logrus.WithField("_method_", "Load").WithField("fileName", fileName).Infoln()
+	c.logger.Info("Load", zap.String("FileName", fileName))
 
 	if c.Dir == "" {
 		return nil
@@ -40,7 +47,7 @@ func (c *Cache) Load(fileName string) (data []byte) {
 
 	data, err := ioutil.ReadFile(c.getPath(fileName))
 	if err != nil {
-		logrus.Warningln(errors.WithMessage(err, "Load failed"))
+		c.logger.Info("Load failed", zap.Error(err))
 		return nil
 	}
 
@@ -48,7 +55,7 @@ func (c *Cache) Load(fileName string) (data []byte) {
 }
 
 func (c *Cache) Save(fileName string, data []byte) error {
-	logrus.WithField("_method_", "Save").WithField("fileName", fileName).Infoln()
+	c.logger.Info("Save", zap.String("FileName", fileName))
 	if c.Dir == "" {
 		return nil
 	}
@@ -57,7 +64,7 @@ func (c *Cache) Save(fileName string, data []byte) error {
 }
 
 func (c *Cache) Remove(fileName string) (err error) {
-	logrus.WithField("_method_", "Remove").WithField("fileName", fileName).Infoln()
+	c.logger.Info("Remove", zap.String("FileName", fileName))
 	if c.Dir == "" {
 		return nil
 	}

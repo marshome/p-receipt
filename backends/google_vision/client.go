@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"github.com/marshome/p-vision/models"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"google.golang.org/api/vision/v1"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 const MAX_TEXT_DETECT_RESULT_DEFAULT = 20
@@ -29,17 +30,21 @@ func (op *CallOptionKey) Get() (k, v string) {
 }
 
 type Client struct {
+	logger  *zap.Logger
 	options *Options
 	service *vision.Service
 	cache   *Cache
 }
 
 func NewClient() *Client {
-	return &Client{}
+	c := &Client{}
+	c.logger = zap.L().Named(reflect.TypeOf(*c).Name())
+
+	return c
 }
 
 func (c *Client) Init(options *Options) (err error) {
-	logrus.Infoln("google_vision.Client Init options=", options)
+	c.logger.Info("Init", zap.Any("options", options))
 
 	if options == nil {
 		return fmt.Errorf("invalid param: opts")
@@ -82,14 +87,10 @@ func (c *Client) Init(options *Options) (err error) {
 }
 
 func (c *Client) CallGoogleVision(request *vision.BatchAnnotateImagesRequest) (response *vision.BatchAnnotateImagesResponse, err error) {
-	logrus.WithField("_func_", "CallGoogleVision").WithField("request", request).Infoln()
-
 	response, err = c.service.Images.Annotate(request).Do(&CallOptionKey{ApiKey: c.options.ApiKey})
 	if err != nil {
 		return nil, errors.WithMessage(err, "Images.Annotate failed")
 	}
-
-	logrus.WithField("_func_", "CallGoogleVision").WithField("response", response).Infoln()
 
 	return response, nil
 }
@@ -97,11 +98,11 @@ func (c *Client) CallGoogleVision(request *vision.BatchAnnotateImagesRequest) (r
 func (c *Client) cacheResponse(cacheFileName string, response *vision.BatchAnnotateImagesResponse) {
 	jsonData, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
-		logrus.Errorln(errors.WithMessage(err, "内部错误：marshal response failed "))
+		c.logger.Error("cacheResponse marshal", zap.Error(err))
 	} else {
 		err = c.cache.Save(cacheFileName, jsonData)
 		if err != nil {
-			logrus.Errorln(err)
+			c.logger.Error("cacheResponse save failed", zap.Error(err))
 		}
 	}
 }
@@ -113,10 +114,10 @@ func (c *Client) TextDetection(imageBase64 string) (textAnnotation *models.TextA
 		response := &vision.BatchAnnotateImagesResponse{}
 		err = json.Unmarshal(cacheData, response)
 		if err != nil {
-			logrus.Errorln(errors.Wrap(err, "unmarshal cached data failed"))
+			c.logger.Error("TextDetection unmarshal cached data failed", zap.Error(err))
 			err = c.cache.Remove(cacheFileName)
 			if err != nil {
-				logrus.Errorln(err.Error())
+				c.logger.Error("TextDetection cache remove failed", zap.Error(err))
 			}
 		} else {
 			if response.Responses[0].FullTextAnnotation == nil {

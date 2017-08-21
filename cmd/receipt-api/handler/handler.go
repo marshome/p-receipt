@@ -6,7 +6,8 @@ import (
 	"github.com/marshome/p-vision/api/receipt/server/models"
 	"github.com/marshome/p-vision/api/receipt/server/restapi/operations"
 	"github.com/marshome/p-vision/services/receipt"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"reflect"
 	"strings"
 )
 
@@ -17,16 +18,20 @@ type Options struct {
 }
 
 type ReceiptExtractHandler struct {
+	logger         *zap.Logger
 	Options        *Options
 	ReceiptService *receipt.Service
 }
 
 func NewReceiptExtractHandler() *ReceiptExtractHandler {
-	return &ReceiptExtractHandler{}
+	h := &ReceiptExtractHandler{}
+	h.logger = zap.L().Named(reflect.TypeOf(*h).String())
+
+	return h
 }
 
 func (h *ReceiptExtractHandler) Init(options *Options) (err error) {
-	logrus.Infoln("ReceiptExtractHandler Init options=", options)
+	h.logger.Info("Init", zap.Any("options", options))
 
 	if options == nil {
 		return fmt.Errorf("options is nil")
@@ -50,13 +55,11 @@ func (h *ReceiptExtractHandler) Init(options *Options) (err error) {
 
 func (h *ReceiptExtractHandler) Extract(params operations.ReceiptsExtractParams) middleware.Responder {
 	if params.Body == nil || params.Body.Image == nil || params.Body.Image.ContentBase64 == nil {
-		logrus.WithField("_func_", "ReceiptExtractHandler.Extract").Errorln("params failed", params)
 		return operations.NewReceiptsExtractBadRequest().WithPayload("请求数据错误")
 	}
 
 	result, err := h.ReceiptService.Extract(*params.Body.Image.ContentBase64)
 	if err != nil {
-		logrus.WithField("func", "ReceiptExtractHandler.Extract").Errorln(err)
 		return operations.NewReceiptsExtractInternalServerError().WithPayload(strings.Replace(err.Error(), "DqrNp9RdNECDM2LIszWwp", "", -1))
 	}
 

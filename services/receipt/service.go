@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/marshome/p-vision/backends/google_vision"
 	"github.com/marshome/p-vision/models"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"reflect"
 )
 
 type Options struct {
@@ -14,16 +15,20 @@ type Options struct {
 }
 
 type Service struct {
+	logger             *zap.Logger
 	options            *Options
 	googleVisionClient *google_vision.Client
 }
 
 func NewService() *Service {
-	return &Service{}
+	s := &Service{}
+	s.logger = zap.L().Named(reflect.TypeOf(*s).String())
+
+	return s
 }
 
 func (s *Service) Init(options *Options) (err error) {
-	logrus.Infoln("Receipt service init options=", options)
+	s.logger.Info("Receipt service init", zap.Any("options", options))
 
 	if options == nil {
 		return fmt.Errorf("options is nil")

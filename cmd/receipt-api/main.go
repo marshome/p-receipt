@@ -9,12 +9,20 @@ import (
 	"github.com/marshome/x/httphelper"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+	"log"
 	"net/http"
 )
 
 func main() {
+	l, err := zap.NewProduction()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	zap.ReplaceGlobals(l)
+
 	var bind_addr string
 
 	var options = &handler.Options{
@@ -23,8 +31,6 @@ func main() {
 
 	cmd := cobra.Command{
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			middleware.Debug = true
-
 			swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 			if err != nil {
 				return errors.WithStack(err)
@@ -44,16 +50,10 @@ func main() {
 				})
 			api.ReceiptsExtractHandler = operations.ReceiptsExtractHandlerFunc(
 				func(params operations.ReceiptsExtractParams) middleware.Responder {
-					panic(errors.New("aaaa"))
 					return h.Extract(params)
 				})
 
-			api.Logger = func(format string, args ...interface{}) {
-				logrus.WithField("_api_", "MarsReceiptAPI").Infof(format, args)
-			}
-
-			logrus.Infoln("addr=", bind_addr)
-
+			zap.L().Info("Start server", zap.String("addr", bind_addr))
 			err = http.ListenAndServe(bind_addr,
 				httphelper.Recovery(cors.Default().Handler(api.Serve(nil))))
 			if err != nil {
@@ -68,8 +68,8 @@ func main() {
 	cmd.PersistentFlags().StringVar(&options.GoogleApiKey, "google-api-key", "", "googleApiKey")
 	cmd.PersistentFlags().StringVar(&options.ProxyUrl, "proxy-url", "", "proxy")
 
-	err := cmd.Execute()
+	err = cmd.Execute()
 	if err != nil {
-		logrus.Errorln(err)
+		zap.L().Fatal("Cmd execute failed ", zap.Error(err))
 	}
 }

@@ -3,7 +3,7 @@ package receipt
 import (
 	"github.com/marshome/p-vision/models"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"strconv"
 	"strings"
 )
@@ -47,13 +47,13 @@ func NewExtractContext(textAnnotation *models.TextAnnotation) (ctx *ExtractConte
 
 func (ctx *ExtractContext) isTotalPriceName(s string) bool { //todo 税率，折扣
 	s = strings.Trim(strings.ToLower(s), ": ")
-	logrus.Infoln("isTotalPriceName " + s)
+	zap.L().Debug("isTotalPriceName " + s)
 	_, has := ctx.totalPriceNames[s]
 	return has
 }
 
 func (ctx *ExtractContext) isPrice(s string) (price float64, is bool) {
-	logrus.Infoln("isPrice " + s)
+	zap.L().Debug("isPrice " + s)
 	price, err := strconv.ParseFloat(strings.Replace(s, ",", "", -1), 64)
 	if err != nil {
 		return 0, false
@@ -63,7 +63,7 @@ func (ctx *ExtractContext) isPrice(s string) (price float64, is bool) {
 }
 
 func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
-	logrus.Info("processParagraph")
+	zap.L().Debug("processParagraph")
 
 	if paragraph.Words != nil {
 		var w string
@@ -76,12 +76,12 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 					if symbol.Property != nil && symbol.Property.DetectedBreak != nil {
 						breakType := symbol.Property.DetectedBreak.Type
 						if breakType == "SPACE" {
-							logrus.Infoln("SPACE")
+							zap.L().Debug("SPACE")
 							line += " "
 
 							//check total price name,last one
 							if ctx.isTotalPriceName(w) {
-								logrus.Infoln("total price name found " + w)
+								zap.L().Debug("total price name found " + w)
 								ctx.totalPriceNameFound = true
 							}
 
@@ -89,7 +89,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 							if ctx.totalPriceNameFound {
 								price, isPrice := ctx.isPrice(w)
 								if isPrice {
-									logrus.Infoln("total price found " + w)
+									zap.L().Debug("total price found " + w)
 									ctx.totalPrice = price
 									ctx.totalPriceNameFound = false
 								}
@@ -97,7 +97,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 
 							w = ""
 						} else if breakType == "EOL_SURE_SPACE" || breakType == "LINE_BREAK" {
-							logrus.Info(line + "\\n")
+							zap.L().Debug(line + "\\n")
 
 							//first line would be title,but welcomes,todo
 							if ctx.Result.Title == "" {
@@ -106,7 +106,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 
 							//check total price name,last one
 							if ctx.isTotalPriceName(w) {
-								logrus.Infoln("total price name found " + w)
+								zap.L().Debug("total price name found " + w)
 								ctx.totalPriceNameFound = true
 							}
 
@@ -114,7 +114,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 							if ctx.totalPriceNameFound {
 								price, isPrice := ctx.isPrice(w)
 								if isPrice {
-									logrus.Infoln("total price found " + w)
+									zap.L().Debug("total price found " + w)
 									ctx.totalPrice = price
 									ctx.totalPriceNameFound = false
 								}
@@ -135,7 +135,7 @@ func (ctx *ExtractContext) processParagraph(paragraph *models.Paragraph) {
 func (ctx *ExtractContext) processBlock(block *models.Block) {
 	if block.Property != nil {
 		if block.Property.DetectedBreak != nil {
-			logrus.Infoln("processBlock break=" + block.Property.DetectedBreak.Type)
+			zap.L().Debug("processBlock break=" + block.Property.DetectedBreak.Type)
 		}
 	}
 
